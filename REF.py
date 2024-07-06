@@ -74,7 +74,7 @@ def random():
     getRREF(random_matrix)
 
 
-def runProgram():
+def run_Program():
     userChoice_RREF = int(input("Choose which do you want to run: "
                        "\n [0] Random Matrix "
                        "\n [1] Custom User Entered Matrix \n"))
@@ -87,4 +87,4 @@ def runProgram():
         start()
 
 
-runProgram()
+run_Program()
