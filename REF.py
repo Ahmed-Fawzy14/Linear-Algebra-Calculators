@@ -3,7 +3,7 @@ import sympy as sp
 
 
 
-def getRREF(matrix):
+def getRREF(matrix, numberOfRows):
 
     x = sp.symbols('x')
     #The first non-zero entry of each row must be 1
@@ -30,29 +30,40 @@ def getRREF(matrix):
                             print(f"I am doing the { matrix[ith_row,:]} + {float_solution}*{matrix[i,jth_column]} operation")
                             matrix[ith_row,:] =  matrix[ith_row,:] + float_solution*matrix[i,:]
                 
-                rowOfZeros = np.all(matrix, axis = 1)
-                ZeroRow_indices = (np.where(rowOfZeros))[0]
                
-                for index in ZeroRow_indices:
-                    for zero_index in ZeroRow_indices:
-                        if index != zero_index:
-                            matrix[[index, zero_index]] = matrix[[zero_index, index]]
-
                 else:
                     pass
             else:
                 break
 
 
+
     # Replace -0.00 with 0.00
     matrix[matrix == -0.0] = 0.0
+
+    rowOfZeros = np.all(matrix == 0, axis=1)
+    ZeroRow_indices = (np.where(rowOfZeros))[0]
+                
+    for index in ZeroRow_indices:
+        print("Before swap:")
+        print("Row to be swapped (index):", matrix[index, :])
+        print("Last row:", matrix[numberOfRows-1, :])
+        
+        # Swap the current zero row with the last row
+        temp = matrix[index, :].copy()  # Use copy to avoid referencing the same memory
+        matrix[index, :] = matrix[numberOfRows-1, :]
+        matrix[numberOfRows-1, :] = temp
+
+        print("After swap:")
+        print("Row after swap (index):", matrix[index, :])
+        print("Last row after swap:", matrix[numberOfRows-1, :])
 
   # Printing the matrix using NumPy's print options
     print("Reduced Row Echelon Form (RREF):")
     np.set_printoptions(precision=2, suppress=True)
     print(matrix)
 
-def start():
+def start(numberOfRows):
 
     numberOfRows = int(input("What is the number of rows of the matrix?"))
     numberOfColumns = int(input("What is the number of columns of the matrix?"))
@@ -74,9 +85,9 @@ def start():
 
         matrix = np.array(entries_float).reshape(numberOfRows, numberOfColumns)
 
-    getRREF(matrix)
+    getRREF(matrix, numberOfRows)
 
-def random():
+def random(numberOfRows):
     numberOfRows = int(input("What is the number of rows of the matrix?"))
     numberOfColumns = int(input("What is the number of columns of the matrix?"))
     size = numberOfRows*numberOfColumns
@@ -86,7 +97,7 @@ def random():
 
     random_matrix = np.random.uniform(low= negative_infinity, high= positive_infinity, size=(numberOfRows, numberOfColumns))
     
-    getRREF(random_matrix)
+    getRREF(random_matrix, numberOfRows)
 
 
 def run_Program():
@@ -94,12 +105,14 @@ def run_Program():
                        "\n [0] Random Matrix "
                        "\n [1] Custom User Entered Matrix \n"))
 
+    numberOfRows = 0;
+
     if userChoice_RREF == 0:
-        random()
+        random(numberOfRows)
     elif userChoice_RREF == 1:
-        start()
+        start(numberOfRows)
     else:
-        start()
+        start(numberOfRows)
 
 
 run_Program()
