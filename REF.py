@@ -1,9 +1,11 @@
 import numpy as np
+import sympy as sp
+
 
 
 def getRREF(matrix):
 
-
+    x = sp.symbols('x')
     #The first non-zero entry of each row must be 1
     for i in range(0,matrix.shape[0], 1):
 
@@ -20,8 +22,17 @@ def getRREF(matrix):
                     first_nonZero = True
                     for ith_row,column_entry in enumerate(matrix[:,jth_column]): #tranvesing in the column to kill
                         if((column_entry.size > 0) and (column_entry != 0) and (column_entry != matrix[i][jth_column])):
-                            matrix[ith_row][jth_column] = 0
-
+                            #change this to doing it using the actual ero so we can store it and figure out what happened to the determinant
+                            #btw this is wrong you need to apply it to the whole row
+                            #from this we can store the type 2 we used before this
+                            #and type 3 inside this
+                            #idt we need to use type 1
+                            #if we have the types we can get the determinant
+                            #if we have the types we can apply them to the identity to get the inverse if the det != 0
+                            equation = sp.Eq(entry + x*matrix[ith_row][jth_column], 0)
+                            solution = sp.solve(equation, x)
+                            float_solution = [float(sol) for sol in solution]
+                            matrix[:,jth_column] = matrix[:,jth_column] + float_solution*matrix[ith_row][jth_column]
 
                 else:
                     pass
