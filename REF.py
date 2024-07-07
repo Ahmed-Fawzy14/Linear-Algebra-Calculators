@@ -31,17 +31,18 @@ def getRREF(matrix):
                             matrix[ith_row,:] =  matrix[ith_row,:] + float_solution*matrix[i,:]
                 
                 rowOfZeros = np.all(matrix, axis = 1)
-                if(rowOfZeros):
-                    ZeroRow_indices = (np.where(rowOfZeros))[0]
-                    for index in ZeroRow_indices:
-                        if(index >= ZeroRow_indices):
-                            lower = ZeroRow_indices
+                ZeroRow_indices = (np.where(rowOfZeros))[0]
+
+                for index in ZeroRow_indices:
+                    for i in range(len(ZeroRow_indices)):
+                        if index >= ZeroRow_indices[i]:
+                            lower = ZeroRow_indices[i]
                             higher = index
-                            matrix[lower], matrix[higher] = matrix[higher], matrix[lower]
+                            matrix[[lower, higher]] = matrix[[higher, lower]]
                         else:
                             lower = index
-                            higher = ZeroRow_indices
-                            matrix[lower], matrix[higher] = matrix[higher], matrix[lower]
+                            higher = ZeroRow_indices[i]
+                            matrix[[lower, higher]] = matrix[[higher, lower]]
 
                 else:
                     pass
