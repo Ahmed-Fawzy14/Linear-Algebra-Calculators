@@ -32,17 +32,11 @@ def getRREF(matrix):
                 
                 rowOfZeros = np.all(matrix, axis = 1)
                 ZeroRow_indices = (np.where(rowOfZeros))[0]
-
+               
                 for index in ZeroRow_indices:
-                    for i in range(len(ZeroRow_indices)):
-                        if index >= ZeroRow_indices[i]:
-                            lower = ZeroRow_indices[i]
-                            higher = index
-                            matrix[[lower, higher]] = matrix[[higher, lower]]
-                        else:
-                            lower = index
-                            higher = ZeroRow_indices[i]
-                            matrix[[lower, higher]] = matrix[[higher, lower]]
+                    for zero_index in ZeroRow_indices:
+                        if index != zero_index:
+                            matrix[[index, zero_index]] = matrix[[zero_index, index]]
 
                 else:
                     pass
