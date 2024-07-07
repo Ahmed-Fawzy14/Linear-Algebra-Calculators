@@ -17,22 +17,31 @@ def getRREF(matrix):
             if(first_nonZero == False): 
                 '''If this is a non-zero element divide the entire row by it
                 to make it a leading 1 and mark that we foudn the pivot'''
+                #Type II
                 if(entry != 0):
                     matrix[i,:]  /= entry
                     first_nonZero = True
+                    #Type III
                     for ith_row,column_entry in enumerate(matrix[:,jth_column]): #tranvesing in the column to kill
                         if((column_entry.size > 0) and (column_entry != 0) and (column_entry != matrix[i][jth_column])):
-                            #change this to doing it using the actual ero so we can store it and figure out what happened to the determinant
-                            #btw this is wrong you need to apply it to the whole row
-                            #from this we can store the type 2 we used before this
-                            #and type 3 inside this
-                            #idt we need to use type 1
-                            #if we have the types we can get the determinant
-                            #if we have the types we can apply them to the identity to get the inverse if the det != 0
-                            equation = sp.Eq(entry + x*matrix[ith_row][jth_column], 0)
+                            equation = sp.Eq(matrix[ith_row][jth_column] + x*matrix[i,jth_column], 0)
                             solution = sp.solve(equation, x)
-                            float_solution = [float(sol) for sol in solution]
-                            matrix[:,jth_column] = matrix[:,jth_column] + float_solution*matrix[ith_row][jth_column]
+                            float_solution = solution[0]
+                            print(f"I am doing the { matrix[ith_row,:]} + {float_solution}*{matrix[i,jth_column]} operation")
+                            matrix[ith_row,:] =  matrix[ith_row,:] + float_solution*matrix[i,:]
+                
+                rowOfZeros = np.all(matrix, axis = 1)
+                if(rowOfZeros):
+                    ZeroRow_indices = (np.where(rowOfZeros))[0]
+                    for index in ZeroRow_indices:
+                        if(index >= ZeroRow_indices):
+                            lower = ZeroRow_indices
+                            higher = index
+                            matrix[lower], matrix[higher] = matrix[higher], matrix[lower]
+                        else:
+                            lower = index
+                            higher = ZeroRow_indices
+                            matrix[lower], matrix[higher] = matrix[higher], matrix[lower]
 
                 else:
                     pass
