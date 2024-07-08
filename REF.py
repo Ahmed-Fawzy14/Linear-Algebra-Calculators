@@ -19,8 +19,7 @@ def getRREF(matrix, numberOfRows):
                     matrix[i, :] /= entry
                     first_nonZero = True
 
-                    # Ensure pivots are in correct order
-                    pivots = sorted(pivots, key=lambda x: (x[1], x[0]))
+                    
 
                     # Type III: Make the other entries in this column zero
                     for ith_row, column_entry in enumerate(matrix[:, jth_column]):  # Traversing in the column to eliminate other entries
@@ -37,7 +36,13 @@ def getRREF(matrix, numberOfRows):
 
     # Replace -0.00 with 0.00
     matrix[matrix == -0.0] = 0.0
-
+    for stopped_pivot in pivots:
+        for moving_pivot in pivots:
+            if((stopped_pivot[0] > moving_pivot[0]) and (stopped_pivot[1] < moving_pivot[1])):
+                temp = matrix[stopped_pivot[0], :].copy()
+                matrix[stopped_pivot[0], :] = matrix[moving_pivot[0], :]
+                matrix[moving_pivot[0], :]  = temp
+        #I have a pivot with a 1 which has a greater row but a less than column than pivots ABOVE it swap)
     # Type I: Move zero rows to the bottom
     while True:
         rowOfZeros = np.all(matrix == 0, axis=1)
@@ -61,16 +66,18 @@ def getRREF(matrix, numberOfRows):
         if not swapped:
             break  # If no swaps were made, exit the while loop
 
+    # Printing the matrix using NumPy's print options
+    print("Reduced Row Echelon Form (RREF):")
+    np.set_printoptions(precision=2, suppress=True)
+    print(matrix)
+    
     return matrix
 
         
 
 
        
-  # Printing the matrix using NumPy's print options
-    print("Reduced Row Echelon Form (RREF):")
-    np.set_printoptions(precision=2, suppress=True)
-    print(matrix)
+
 
 def start(numberOfRows):
 
@@ -95,6 +102,30 @@ def start(numberOfRows):
         matrix = np.array(entries_float).reshape(numberOfRows, numberOfColumns)
 
     getRREF(matrix, numberOfRows)
+
+    def fromFile(numberOfRows):
+
+        numberOfRows = int(input("What is the number of rows of the matrix?"))
+        numberOfColumns = int(input("What is the number of columns of the matrix?"))
+        size = numberOfRows*numberOfColumns
+
+
+
+        #want to make this also work by taking direclty from files
+        entries_str = list(input("Enter all entries from right to left with a comma in between each one").replace(',', ''))
+
+
+        if(len(entries_str) != size):
+            print("Invalid number of entires")
+            quit()
+        else:
+            #List comprehenssion 
+            #Turn all elements in list into ints
+            entries_float = [float(entry) for entry in entries_str]
+
+            matrix = np.array(entries_float).reshape(numberOfRows, numberOfColumns)
+
+        getRREF(matrix, numberOfRows)
 
 def random(numberOfRows):
     numberOfRows = int(input("What is the number of rows of the matrix?"))
