@@ -1,7 +1,7 @@
 import numpy as np
 import sympy as sp
 
-def typeII_and_III(matrix,numberOfRows):
+def typeII_and_III_RREF(matrix,numberOfRows):
     x = sp.symbols('x')
      # The first non-zero entry of each row must be 1
     for i in range(numberOfRows):
@@ -28,7 +28,7 @@ def typeII_and_III(matrix,numberOfRows):
             else:
                 break
 
-def typeII_and_III(matrix,identity_matrix,numberOfRows):
+def typeII_and_III_Inverse(matrix,identity_matrix,numberOfRows):
     x = sp.symbols('x')
 
     # The first non-zero entry of each row must be 1
@@ -61,7 +61,7 @@ def typeII_and_III(matrix,identity_matrix,numberOfRows):
                 break
 
 
-def typeI_pivots(matrix):
+def typeI_pivots_RREF(matrix):
      while True:
         pivot_row_indices, pivot_column_indices = np.where(matrix == 1)
         pivot_indices = list(zip(pivot_row_indices, pivot_column_indices))
@@ -89,7 +89,7 @@ def typeI_pivots(matrix):
             break  # If no swaps were made, exit the while loop
             #I have a pivot with a 1 which has a greater row but a less than column than pivots ABOVE it swap)
 
-def typeI_pivots(matrix, identity_matrix):
+def typeI_pivots_Inverse(matrix, identity_matrix):
     while True:
         pivot_row_indices, pivot_column_indices = np.where(matrix == 1)
         pivot_indices = list(zip(pivot_row_indices, pivot_column_indices))
@@ -121,7 +121,7 @@ def typeI_pivots(matrix, identity_matrix):
         if not swapped:
             break  # If no swaps were made, exit the while loop
 
-def typeI_zeroRows(matrix):
+def typeI_zeroRows_RREF(matrix):
      while True:
         #I need to add something like this in the top loop to update things
         rowOfZeros = np.all(matrix == 0, axis=1)
@@ -145,7 +145,7 @@ def typeI_zeroRows(matrix):
         if not swapped:
             break  # If no swaps were made, exit the while loop
 
-def typeI_zeroRows(matrix, identity_matrix):
+def typeI_zeroRows_Inverse(matrix, identity_matrix):
     # Type I: Move zero rows to the bottom
     while True:
         rowOfZeros = np.all(matrix == 0, axis=1)
@@ -177,16 +177,16 @@ def typeI_zeroRows(matrix, identity_matrix):
 def getRREF(matrix, numberOfRows):
     x = sp.symbols('x')
     numberOfRows, numberOfColumns = matrix.shape
-    typeII_and_III(matrix, numberOfRows)
+    typeII_and_III_RREF(matrix, numberOfRows)
    
     # Replace -0.00 with 0.00
     matrix[matrix == -0.0] = 0.0
 
     print("Going to enter")
     #Type I: Put pivots in order
-    typeI_pivots(matrix)
+    typeI_pivots_RREF(matrix)
     # Type I: Move zero rows to the bottom
-    typeI_zeroRows(matrix)
+    typeI_zeroRows_RREF(matrix)
 
     # Printing the matrix using NumPy's print options
     print("Reduced Row Echelon Form (RREF):")
@@ -200,17 +200,17 @@ def getInverse(matrix):
     numberOfRows, numberOfColumns = matrix.shape
     identity_matrix = np.identity((numberOfRows))
  
-    typeII_and_III(matrix, identity_matrix, numberOfRows)
+    typeII_and_III_Inverse(matrix, identity_matrix, numberOfRows)
 
    
     # Replace -0.00 with 0.00
     matrix[matrix == -0.0] = 0.0
 
     #Type I: Put pivots in order
-    typeI_pivots(matrix, identity_matrix)
+    typeI_pivots_Inverse(matrix, identity_matrix)
 
     # Type I: Move zero rows to the bottom
-    typeI_zeroRows(matrix, identity_matrix)
+    typeI_zeroRows_Inverse(matrix, identity_matrix)
 
 
     # Replace -0.00 with 0.00
