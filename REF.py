@@ -2,8 +2,6 @@ import numpy as np
 import sympy as sp
 
 
-
-
 def getRREF(matrix, numberOfRows):
     x = sp.symbols('x')
     pivots = []
@@ -17,7 +15,7 @@ def getRREF(matrix, numberOfRows):
                 # If this is a non-zero element, divide the entire row by it to make it a leading 1 and mark that we found the pivot
                 if entry != 0:
                     # Use numpy.where to find the indices of the entry
-                    pivots.append((i, jth_column))
+                    #pivots.append((i, jth_column))
                     matrix[i, :] /= entry
                     first_nonZero = True
 
@@ -38,15 +36,40 @@ def getRREF(matrix, numberOfRows):
 
     # Replace -0.00 with 0.00
     matrix[matrix == -0.0] = 0.0
-    for stopped_pivot in pivots:
-        for moving_pivot in pivots:
-            if((stopped_pivot[0] > moving_pivot[0]) and (stopped_pivot[1] < moving_pivot[1])):
-                temp = matrix[stopped_pivot[0], :].copy()
-                matrix[stopped_pivot[0], :] = matrix[moving_pivot[0], :]
-                matrix[moving_pivot[0], :]  = temp
-        #I have a pivot with a 1 which has a greater row but a less than column than pivots ABOVE it swap)
+
+    print("Going to enter")
+    #Type I: Put pivots in order
+
+ 
+    while True:
+        pivot_row_indices, pivot_column_indices = np.where(matrix == 1)
+        pivot_indices = list(zip(pivot_row_indices, pivot_column_indices))
+
+        print(f"row: {pivot_row_indices} and col {pivot_column_indices} and pivot_indices {pivot_indices}")
+
+        swapped = False
+
+        for stopped_pivot in pivot_indices:
+            print(f"Stopped pivot {matrix[stopped_pivot[0], :]} {stopped_pivot}")
+            for moving_pivot in pivot_indices:
+                print(f"Moving pivot {matrix[moving_pivot[0], :]} {moving_pivot}")
+                if ((stopped_pivot[0] > moving_pivot[0]) and (stopped_pivot[1] < moving_pivot[1])) or \
+                ((stopped_pivot[0] < moving_pivot[0]) and (stopped_pivot[1] > moving_pivot[1])):
+                    temp = matrix[stopped_pivot[0], :].copy()
+                    print(f"Stopped pivot is {stopped_pivot} {matrix[stopped_pivot[0], :]} is switching with moving pivot {moving_pivot} {matrix[moving_pivot[0], :]}")
+                    matrix[stopped_pivot[0], :] = matrix[moving_pivot[0], :]
+                    matrix[moving_pivot[0], :] = temp
+                    swapped = True
+                    break
+            if swapped:
+                break  # Exit the outer loop to update indices
+
+        if not swapped:
+            break  # If no swaps were made, exit the while loop
+            #I have a pivot with a 1 which has a greater row but a less than column than pivots ABOVE it swap)
     # Type I: Move zero rows to the bottom
     while True:
+        #I need to add something like this in the top loop to update things
         rowOfZeros = np.all(matrix == 0, axis=1)
         ZeroRow_indices = np.where(rowOfZeros)[0]
         rowOfNonZeros = np.any(matrix != 0, axis=1)
@@ -114,17 +137,36 @@ def getInverse(matrix):
 
     # Replace -0.00 with 0.00
     matrix[matrix == -0.0] = 0.0
-    for stopped_pivot in pivots:
-        for moving_pivot in pivots:
-            if((stopped_pivot[0] > moving_pivot[0]) and (stopped_pivot[1] < moving_pivot[1])):
-                temp = matrix[stopped_pivot[0], :].copy()
-                matrix[stopped_pivot[0], :] = matrix[moving_pivot[0], :]
-                matrix[moving_pivot[0], :]  = temp
+    while True:
+        pivot_row_indices, pivot_column_indices = np.where(matrix == 1)
+        pivot_indices = list(zip(pivot_row_indices, pivot_column_indices))
 
-                temp_identity = identity_matrix[stopped_pivot[0], :].copy()
-                identity_matrix[stopped_pivot[0], :] = identity_matrix[moving_pivot[0], :]
-                identity_matrix[moving_pivot[0], :]  = temp_identity
+        identity_row_indices, identity_column_indices = np.where(identity_matrix == 1)
+        identity_pivot_indices = list(zip(identity_row_indices, identity_column_indices))
 
+        swapped = False
+
+        for stopped_pivot in pivot_indices:
+            print(f"Stopped pivot {matrix[stopped_pivot[0], :]} {stopped_pivot}")
+            for moving_pivot in pivot_indices:
+                print(f"Moving pivot {matrix[moving_pivot[0], :]} {moving_pivot}")
+                if ((stopped_pivot[0] > moving_pivot[0]) and (stopped_pivot[1] < moving_pivot[1])) or \
+                ((stopped_pivot[0] < moving_pivot[0]) and (stopped_pivot[1] > moving_pivot[1])):
+                    temp = matrix[stopped_pivot[0], :].copy()
+                    print(f"Stopped pivot is {stopped_pivot} {matrix[stopped_pivot[0], :]} is switching with moving pivot {moving_pivot} {matrix[moving_pivot[0], :]}")
+                    matrix[stopped_pivot[0], :] = matrix[moving_pivot[0], :]
+                    matrix[moving_pivot[0], :] = temp
+
+                    temp_identity = identity_matrix[stopped_pivot[0], :].copy()
+                    identity_matrix[stopped_pivot[0], :] = identity_matrix[moving_pivot[0], :]
+                    identity_matrix[moving_pivot[0], :] = temp_identity
+                    swapped = True
+                    break
+            if swapped:
+                break  # Exit the outer loop to update indices
+
+        if not swapped:
+            break  # If no swaps were made, exit the while loop
 
         #I have a pivot with a 1 which has a greater row but a less than column than pivots ABOVE it swap)
     # Type I: Move zero rows to the bottom
