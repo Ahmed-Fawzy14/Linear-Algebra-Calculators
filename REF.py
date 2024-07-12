@@ -9,6 +9,7 @@ def typeII_and_III_RREF(matrix,numberOfRows):
         for jth_column, entry in enumerate(matrix[i, :]):  # Traversing for every entry in the ith row (traversing columns of the ith row)
             if not first_nonZero:
                 # If this is a non-zero element, divide the entire row by it to make it a leading 1 and mark that we found the pivot
+                entry = fix_near_zero(entry)
                 if entry != 0:
                     matrix[i, :] /= entry
                     first_nonZero = True
@@ -28,7 +29,7 @@ def typeII_and_III_RREF(matrix,numberOfRows):
             else:
                 break
 
-def fix_near_zero(value, tolerance=1e-10):
+def fix_near_zero(value, tolerance=1e-4):
     if np.isclose(value, 0, atol=tolerance):
         return 0.0
     return value
@@ -274,7 +275,7 @@ def getRREF(matrix, numberOfRows):
 
     # Printing the matrix using NumPy's print options
     print("Reduced Row Echelon Form (RREF):")
-    np.set_printoptions(precision=10, suppress=True)
+    np.set_printoptions(precision=5, suppress=True)
     print(matrix)
     
     return matrix
@@ -285,6 +286,14 @@ def getInverse(matrix):
 
     identity_matrix = np.identity((numberOfRows))
 
+    if numberOfRows != numberOfColumns:
+        print("Matrix must be square to compute inverse")
+        quit()
+
+    if(getDeterminant(matrix) == 0):
+        print("Matrix is singular")
+        quit()
+    
  
     typeII_and_III_Inverse(matrix, identity_matrix, numberOfRows)
 
@@ -303,12 +312,12 @@ def getInverse(matrix):
     matrix[matrix == -0.0] = 0.0
     identity_matrix[identity_matrix == -0.0] = 0.0
 
-    print("Iverse Matrix: ")
+    print("Inverse Matrix: ")
     np.set_printoptions(precision=10, suppress=True)
     print(identity_matrix)
 
     print("Reduced Row Echelon Form (RREF):")
-    np.set_printoptions(precision=10, suppress=True)
+    np.set_printoptions(precision=5, suppress=True)
     print(matrix)
     
 def get_ijMinor(matrix, row, column):
@@ -318,7 +327,8 @@ def getDeterminant(matrix):
     numberOfRows, numberOfColumns = matrix.shape
 
     if numberOfRows != numberOfColumns:
-        raise ValueError("Matrix must be square to compute determinant")
+        print("Matrix must be square to compute determinant")
+        quit()
 
     if numberOfRows == 1:
         return matrix[0, 0]
@@ -417,12 +427,26 @@ def random(numberOfRows):
     numberOfColumns = int(input("What is the number of columns of the matrix?"))
     size = numberOfRows*numberOfColumns
     
-    positive_infinity = 1e6  
-    negative_infinity = -1e6  
+    #At 1e4 or 1e3 it is good else we start to deal with large value errors 
+    positive_infinity = 1e9
+    negative_infinity = -1e9  
 
     random_matrix = np.random.uniform(low= negative_infinity, high= positive_infinity, size=(numberOfRows, numberOfColumns))
-    
+    print(random_matrix)
     getRREF(random_matrix, numberOfRows)
+
+def random_inverse(numberOfRows):
+    numberOfRows = int(input("What is the number of rows of the matrix?"))
+    numberOfColumns = int(input("What is the number of columns of the matrix?"))
+    size = numberOfRows*numberOfColumns
+
+    #At 1e4 or 1e3 it is good else we start to deal with large value errors 
+    positive_infinity = 1e9
+    negative_infinity = -1e9  
+
+    random_matrix = np.random.uniform(low= negative_infinity, high= positive_infinity, size=(numberOfRows, numberOfColumns))
+    print(random_matrix)
+    getInverse(random_matrix)
 
 
 def getInverseStart(numberOfRows):
@@ -446,7 +470,7 @@ def getInverseStart(numberOfRows):
 
         matrix = np.array(entries_float).reshape(numberOfRows, numberOfColumns) 
         
-        np.set_printoptions(precision=10, suppress=True)
+        np.set_printoptions(precision=5, suppress=True)
         print(matrix)
 
     getInverse(matrix)
@@ -475,7 +499,8 @@ def run_Program():
                        "\n [0] Random Matrix "
                        "\n [1] Custom User Entered Matrix"
                        "\n [2] Get Inverse of a Matrix"
-                       "\n [3] Get the Determinant of a Matrix"))
+                       "\n [3] Get the Determinant of a Matrix"
+                       "\n [4] Get the Inverse of a Random Matrix\n"))
 
     numberOfRows = 0;
 
@@ -487,6 +512,8 @@ def run_Program():
         getInverseStart(numberOfRows)
     elif userChoice_RREF == 3:
         getDeterminantStart()
+    elif userChoice_RREF == 4:
+        random_inverse(numberOfRows)
 
 
 run_Program()
