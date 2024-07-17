@@ -15,6 +15,8 @@ def matrix_to_string(matrix):
 def fix_near_zero(value, tolerance=1e-4):
     if np.isclose(value, 0 , atol=tolerance):
         return 0.0
+    elif np.isclose(value, 1, atol=tolerance):
+        return 1.0
     return value
 
 def typeII_and_III_RREF(matrix):
@@ -97,21 +99,31 @@ def typeII_and_III_Inverse(matrix,identity_matrix):
 
 
 def typeI_pivots_RREF(matrix, pivot_index):
-     while True:
-        pivot_indices = pivot_index
-
+    pivot_indices = pivot_index  # Initialize pivot_indices to pivot_index initially
+    new_pivot_indices = pivot_indices
+    while True:
+       
 
         swapped = False
+
+        pivot_indices = new_pivot_indices  # Update pivot_indices at the end of each iteration
 
         for stopped_pivot in pivot_indices:
             for moving_pivot in pivot_indices:
                 if ((stopped_pivot[0] > moving_pivot[0]) and (stopped_pivot[1] < moving_pivot[1])) or \
                 ((stopped_pivot[0] < moving_pivot[0]) and (stopped_pivot[1] > moving_pivot[1])) and ((stopped_pivot[0] != moving_pivot[0]) and (stopped_pivot[1] != moving_pivot[1])):
-                    print(f"{((stopped_pivot[0] > moving_pivot[0]) and (stopped_pivot[1] < moving_pivot[1])) or ((stopped_pivot[0] < moving_pivot[0]) and (stopped_pivot[1] > moving_pivot[1])) and ((stopped_pivot[0] != moving_pivot[0]) and (stopped_pivot[1] != moving_pivot[1]))}")
+                    # Swap rows in the matrix
                     temp = matrix[stopped_pivot[0], :].copy()
-                    print(f"Stopped pivot is {stopped_pivot} {matrix[stopped_pivot[0], :]} is switching with moving pivot {moving_pivot} {matrix[moving_pivot[0], :]}")
                     matrix[stopped_pivot[0], :] = matrix[moving_pivot[0], :]
                     matrix[moving_pivot[0], :] = temp
+
+                    # Update new_pivot_indices with the new positions
+                    new_pivot_indices.remove(stopped_pivot)
+                    new_pivot_indices.remove(moving_pivot)
+                    new_pivot_indices.append((moving_pivot[0], stopped_pivot[1]))
+                    new_pivot_indices.append((stopped_pivot[0], moving_pivot[1]))
+
+
                     swapped = True
                     break
             if swapped:
@@ -119,29 +131,38 @@ def typeI_pivots_RREF(matrix, pivot_index):
 
         if not swapped:
             break  # If no swaps were made, exit the while loop
-            #I have a pivot with a 1 which has a greater row but a less than column than pivots ABOVE it swap)
 
 def typeI_pivots_Inverse(matrix, identity_matrix, pivot_index):
+    pivot_indices = pivot_index  # Initialize pivot_indices to pivot_index initially
+    new_pivot_indices = pivot_indices
     while True:
-        
-        pivot_indices = pivot_index
-
         identity_row_indices, identity_column_indices = np.where(identity_matrix == 1)
         identity_pivot_indices = list(zip(identity_row_indices, identity_column_indices))
 
         swapped = False
 
+        pivot_indices = new_pivot_indices  # Update pivot_indices at the end of each iteration
+
         for stopped_pivot in pivot_indices:
             for moving_pivot in pivot_indices:
                 if ((stopped_pivot[0] > moving_pivot[0]) and (stopped_pivot[1] < moving_pivot[1])) or \
                 ((stopped_pivot[0] < moving_pivot[0]) and (stopped_pivot[1] > moving_pivot[1])) and ((stopped_pivot[0] != moving_pivot[0]) and (stopped_pivot[1] != moving_pivot[1])):
+                    # Swap rows in the matrix
                     temp = matrix[stopped_pivot[0], :].copy()
                     matrix[stopped_pivot[0], :] = matrix[moving_pivot[0], :]
                     matrix[moving_pivot[0], :] = temp
 
+                    # Update new_pivot_indices with the new positions
+                    new_pivot_indices.remove(stopped_pivot)
+                    new_pivot_indices.remove(moving_pivot)
+                    new_pivot_indices.append((moving_pivot[0], stopped_pivot[1]))
+                    new_pivot_indices.append((stopped_pivot[0], moving_pivot[1]))
+
+                    # Swap rows in the identity matrix
                     temp_identity = identity_matrix[stopped_pivot[0], :].copy()
                     identity_matrix[stopped_pivot[0], :] = identity_matrix[moving_pivot[0], :]
                     identity_matrix[moving_pivot[0], :] = temp_identity
+
                     swapped = True
                     break
             if swapped:
@@ -149,6 +170,8 @@ def typeI_pivots_Inverse(matrix, identity_matrix, pivot_index):
 
         if not swapped:
             break  # If no swaps were made, exit the while loop
+
+
 
         
 def typeI_zeroRows_RREF(matrix):
@@ -231,7 +254,7 @@ def getRREF(matrix):
         
 def getInverse(matrix):
     numberOfRows, numberOfColumns = matrix.shape
-
+    matrix_copy = matrix.copy()
     identity_matrix = np.identity((numberOfRows))
 
     if numberOfRows != numberOfColumns:
@@ -252,27 +275,24 @@ def getInverse(matrix):
     # Type I: Move zero rows to the bottom
     typeI_zeroRows_Inverse(matrix, identity_matrix)
     
-    '''
-        for i in range(numberOfRows):
-        for entry in matrix[i,:]:
-            fix_near_zero(entry)
-            entry = entry
+    
+    for (i, j), value in np.ndenumerate(matrix):
+        matrix[i,j] = fix_near_zero(matrix[i,j])
 
-
-    for i in range(numberOfRows):
-        for entry in identity_matrix[i,:]:
-            fix_near_zero(entry)
-            entry = entry
-    '''
-
+    print("Original Matrix: ")
+    np.set_printoptions(precision=10, suppress=True)
+    matrix_copy_str = matrix_to_string(matrix_copy)
+    print(matrix_copy_str)
 
     print("Inverse Matrix: ")
     np.set_printoptions(precision=10, suppress=True)
-    print(identity_matrix)
+    identity_matrix_string = matrix_to_string(identity_matrix)
+    print(identity_matrix_string)
 
     print("Reduced Row Echelon Form (RREF):")
     np.set_printoptions(precision=5, suppress=True)
-    print(matrix)
+    matrix_string = matrix_to_string(matrix)
+    print(matrix_string)
     
 def get_ijMinor(matrix, row, column):
     return np.delete(np.delete(matrix, row, axis=0), column, axis=1)
