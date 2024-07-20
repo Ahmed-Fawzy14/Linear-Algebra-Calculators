@@ -22,6 +22,7 @@ def fix_near_zero(value, tolerance=1e-4):
 
 # Function to perform type II and III row operations to obtain RREF
 def typeII_and_III_RREF(matrix):
+    
     x = sp.symbols('x')
     pivot_indices = []
     numberOfRows, numberOfColumns = matrix.shape
@@ -57,6 +58,7 @@ def typeII_and_III_RREF(matrix):
 
 # Function to perform type II and III row operations to obtain inverse
 def typeII_and_III_Inverse(matrix, identity_matrix):
+    
     x = sp.symbols('x')
     pivot_indices = []
     numberOfRows, numberOfColumns = matrix.shape
@@ -400,6 +402,7 @@ def getInverseStart():
 
     getInverse(matrix)
 
+
 # Function to get the determinant of a matrix from user input
 def getDeterminantStart():
     numberOfRows = int(input("What is the number of rows of the matrix?"))
@@ -409,7 +412,7 @@ def getDeterminantStart():
         print("Matrix must be square to compute determinant")
         return
 
-    entries_str = input("Enter all entries from right to left with a comma in between each one: ").split(',')
+    entries_str = input("Enter all entries from right to left with a comma in between each one (no spaces): ").split(',')
 
     if len(entries_str) != numberOfRows * numberOfColumns:
         print("Invalid number of entries")
@@ -429,7 +432,7 @@ def run_Program():
                        "\n [2] Get the Determinant of a Matrix"
                        "\n [3] Get the RREF of a Random Matrix"
                        "\n [4] Get the Inverse of a Random Matrix"
-                       "\n [5] Get the Determinant of a Random Matrix \n"
+                       "\n [5] Get the Determinant of a Random Matrix\n"
                        ))
 
     numberOfRows = 0;
@@ -447,4 +450,9 @@ def run_Program():
     elif userChoice_RREF == 5:
         random_determinant()
 
+
+
 run_Program()
+    
+
+
